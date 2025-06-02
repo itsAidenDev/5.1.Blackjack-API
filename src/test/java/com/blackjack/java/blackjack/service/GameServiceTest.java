@@ -1,8 +1,9 @@
-import entities.gameSessions.Game;
-import entities.Player;
-import service.GameService;
-import repositories.mysql.GameRepository;
-import repositories.mongodb.PlayerRepository;
+package com.blackjack.java.blackjack.service;
+
+import com.blackjack.java.blackjack.models.Game;
+import com.blackjack.java.blackjack.models.Player;
+import com.blackjack.java.blackjack.repositories.GameRepository;
+import com.blackjack.java.blackjack.repositories.PlayerRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,11 +31,11 @@ public class GameServiceTest {
     public void testCreateNewGameWithNewPlayer() {
         String playerName = "testPlayer";
         Player newPlayer = new Player(playerName);
-        newPlayer.setId("player123");
+        newPlayer.setPlayerId(Long.valueOf("123"));
 
         Game newGame = new Game();
-        newGame.setId(1L);
-        newGame.setPlayerId(newPlayer.getId());
+        newGame.setGameId(1L);
+        newGame.setPlayerId(String.valueOf(newPlayer.getPlayerId()));
 
         when(playerRepository.findByName(playerName)).thenReturn(Mono.empty());
         when(playerRepository.save(any(Player.class))).thenReturn(Mono.just(newPlayer));
@@ -44,7 +45,7 @@ public class GameServiceTest {
 
         StepVerifier.create(result)
                 .expectNextMatches(game ->
-                        game.getId() == 1L &&
+                        game.getGameId().equals(1L) &&
                                 game.getPlayerId().equals("player123"))
                 .verifyComplete();
     }

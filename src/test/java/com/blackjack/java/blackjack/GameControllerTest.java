@@ -1,8 +1,8 @@
 package com.blackjack.java.blackjack;
 
-import controllers.GameController;
-import entities.gameSessions.Game;
-import service.GameService;
+import com.blackjack.java.blackjack.controllers.GameController;
+import com.blackjack.java.blackjack.models.Game;
+import com.blackjack.java.blackjack.service.GameService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,7 +28,7 @@ public class GameControllerTest {
     @Test
     public void testCreateNewGame() {
         Game game = new Game();
-        game.setId(1L);
+        game.setGameId(1L);
 
         when(gameService.createNewGame(anyString()))
                 .thenReturn(Mono.just(game));
