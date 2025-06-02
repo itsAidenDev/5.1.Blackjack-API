@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
+import java.net.http.HttpHeaders;
 import java.util.Date;
 
 @Service
@@ -24,7 +25,7 @@ public class GameService {
 
     @Transactional
     public Mono<Game> createNewGame(String playerName) {
-        return playerRepository.findByName(playerName)
+        return playerRepository.findById(playerName)
                 .switchIfEmpty(Mono.defer(() -> {
                     Player newPlayer = new Player(playerName);
                     return playerRepository.save(newPlayer);
@@ -36,5 +37,21 @@ public class GameService {
                     newGame.setStatus("IN_PROGRESS");
                     return Mono.just(gameRepository.save(newGame));
                 });
+    }
+
+    public Object getGameById(Long id) {
+        return null;
+    }
+
+    public Object getPlayerById(Long id) {
+        return null;
+    }
+
+    public HttpHeaders playGame(Long id, String action) {
+        return null;
+    }
+
+    public Mono<Object> deleteGame(Long id) {
+        return null;
     }
 }

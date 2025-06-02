@@ -1,63 +1,123 @@
 package entities.gameSessions;
 
-import entities.Player;
-import lombok.Getter;
-import lombok.Setter;
+import utils.GameStatus;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Objects;
+import lombok.*;
 
-@Document
+@Data
+@Getter
+@Setter
+@Document(collection = "games")
 public class Game {
-
-    @Setter
-    @Getter
     @Id
-    private String id;
-    @Getter
-    private List<Player> players = new ArrayList<>();
-    private List<Turn> turnsPlayed = new ArrayList<>();
-    @Getter
-    @Setter
-    private Turn activeTurn;
-    @Setter
-    private boolean gameOn;
+    private Long gameId;
+    private String playerId;
+    //private Date createdAt;
+    private GameStatus status;
+    private Hand playerHand;
+    private Hand dealerHand;
+    private boolean playerTurn;
 
-    public List<Turn> getTurnsPlayed() {
-        return turnsPlayed;
+    private int playerScore;
+    private int dealerScore;
+    private List<String> playerCards;
+    private List<String> dealerCards;
+    private int bet;
+
+    public Game() {
+     //   this.createdAt = new Date();
     }
 
-    public void setTurnsPlayed(List<Turn> turnsPlayed) {
-        this.turnsPlayed = new ArrayList<>(turnsPlayed);
+    public Game(Long playerId, int initialBet) {
+        if(initialBet <= 0) {
+            throw new InvalidActionException("La apuesta no puede ser 0");
+        }
+        this.gameId = UUID.randomUUID().toString();
+        this.deck = new Deck();
+        this.playerHand = new Hand();
+        this.dealerHand = new Hand();
+        this.playerId = playerId;
+        this.bet = initialBet;
+        this.status = GameStatus.IN_PROGRESS;
+        this.playerTurn = true;
     }
 
-    public void setPlayers(List<Player> players) {
-        this.players = new ArrayList<>(players);
+    public void dealInitialCards() {
+        playerHand.addCard(deck.drawCard());
+        dealerHand.addCard(deck.drawCard());
+        playerHand.addCard(deck.drawCard());
+        dealerHand.addCard(deck.drawCard());
     }
 
-    public boolean isGameOn() {
-        return (getActiveTurn() != null);
+    public void checkInitialBlackjack() {
+        boolean playerBlackjack = playerHand.isBlackjack();
+        boolean dealerBlackjack = dealerHand.isBlackjack();
+
+        if (playerBlackjack){
+            this.playerTurn = false;
+            if(dealerBlackjack) {
+                this.status = GameStatus.DRAW;
+            } else {
+                this.status = GameStatus.WON;
+            }
+        }
     }
 
-    @Override
-    public String toString() {
-        return "Game{ id = " + id + " }";
+    private void ensurePlayerCanPlay() {
+        if (status != GameStatus.IN_PROGRESS || !playerTurn) {
+            throw new InvalidPlayException(
+                    "No puede jugar " + status + ", playerTurn=" + playerTurn
+            );
+        }
+    }
+    public void playerHit() {
+        ensurePlayerCanPlay();
+        if(!playerHand.canHit()){
+            throw new InvalidActionException("No puede pedir carta" + playerHand);
+        }
+        playerHand.addCard(deck.drawCard());
+        if(playerHand.isBusted()) {
+            status = GameStatus.PLAYER_BUSTED;
+            playerTurn = false;
+        } else if (playerHand.hasTwentyOne()) {
+            playerTurn = false;
+            dealerPlay();
+        }
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Game game = (Game) o;
-        return gameOn == game.gameOn && Objects.equals(id, game.id) && Objects.equals(players, game.players) && Objects.equals(turnsPlayed, game.turnsPlayed) && Objects.equals(activeTurn, game.activeTurn);
+    public void playerStand() {
+        ensurePlayerCanPlay();
+        playerHand.stand();
+        playerTurn = false;
+        dealerPlay();
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, players, turnsPlayed, activeTurn, gameOn);
+    private void dealerPlay() {
+        if(status != GameStatus.IN_PROGRESS) return;
+
+        while (dealerHand.calculateValue() < 17) {
+            dealerHand.addCard(deck.drawCard());
+        }
+        if(dealerHand.isBusted()) {
+            status = GameStatus.WON;
+            return;
+        }
+        int dealerValue = dealerHand.calculateValue();
+        int playerValue = playerHand.calculateValue();
+
+        if(dealerValue > playerValue) {
+            status = GameStatus.LOST;
+        }else if (dealerValue < playerValue) {
+            status = GameStatus.WON;
+        }else {
+            status = GameStatus.DRAW;
+        }
     }
 
+    public boolean isBlackjack() {
+        return playerHand.isBlackjack();
+    }
 }

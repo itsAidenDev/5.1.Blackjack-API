@@ -31,4 +31,8 @@ public class PlayerService {
                         p1.getTotalWins() / (double) p1.getTotalGames()
                 ));
     }
+
+    public Mono<Player> getPlayerById(String playerId) {
+        return playerRepository.findById(playerId);
+    }
 }

@@ -1,4 +1,4 @@
-/*package entities.gameSessions;
+package entities.gameSessions;
 
 import entities.Player;
 import java.util.ArrayList;
@@ -47,4 +47,3 @@ public class GameBuilder {
     }
 }
 
-*/

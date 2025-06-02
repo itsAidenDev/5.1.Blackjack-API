@@ -25,22 +25,25 @@ public class GameController {
     }
 
     @GetMapping("/{id}")
-    public Mono<ResponseEntity<Game>> getGameDetails(@PathVariable Long id) {
-        return Mono.justOrEmpty(gameService.getGameById(id))
+    public Mono<ResponseEntity<Object>> getGameDetails(@PathVariable Long id) {
+        return Mono.justOrEmpty(gameService.getPlayerById(id))
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/{id}/play")
-    public Mono<ResponseEntity<Game>> playGame(@PathVariable Long id, @RequestBody String action) {
-        return gameService.playGame(id, action)
-                .map(ResponseEntity::ok)
+    public Mono<ResponseEntity<Game>> playGame(
+            @PathVariable String id,
+            @RequestBody String action) {
+        return gameService.playGame(Long.valueOf(id), action)
+                .map(game -> ResponseEntity.ok(game))
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}/delete")
-    public Mono<ResponseEntity<Void>> deleteGame(@PathVariable Long id) {
-        return gameService.deleteGame(id)
-                .then(Mono.just(ResponseEntity.noContent().build()));
+    public Mono<ResponseEntity<Object>> deleteGame(@PathVariable String id) {
+        return gameService.deleteGame(Long.valueOf(id))
+                .then(Mono.just(ResponseEntity.noContent().build()))
+                .onErrorResume(e -> Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()));
     }
 }

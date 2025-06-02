@@ -2,10 +2,12 @@ package utils;
 
 public enum GameStatus {
     IN_PROGRESS,
-    PLAYER_BUSTED,
-    PLAYER_WIN,
-    DEALER_WIN,
-    DRAW,
-    DEALER_BUSTED
+    WON,
+    LOST,
+    DRAW;
+
+    public static String toString(GameStatus status) {
+        return null;
+    }
 }
 

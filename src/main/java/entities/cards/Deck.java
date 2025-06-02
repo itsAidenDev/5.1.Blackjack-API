@@ -7,7 +7,7 @@ import java.util.List;
 public class Deck {
     private List<Card> cards;
 
-    public Deck() {
+    public void Deck() {
         this.cards = new ArrayList<>();
         initializeDeck();
         shuffle();
