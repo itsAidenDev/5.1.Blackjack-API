@@ -20,16 +20,14 @@ The main objectives of this project are:
 
 ## 🚀 Technologies Used
 
-- Java 17+
+- Java 21
 - Spring Boot
 - Spring WebFlux
-- MongoDB (Reactive)
+- MongoDB 
 - MySQL
 - Swagger / OpenAPI
 - JUnit 5
 - Mockito
-- Project Reactor
-- Docker
 
 ---
 
@@ -39,7 +37,6 @@ The main objectives of this project are:
 - Dual database support: MongoDB and MySQL.
 - Global exception handling with `GlobalExceptionHandler`.
 - Unit tests for key services and controllers.
-- Automatically generated API documentation with Swagger.
 
 ---
 
