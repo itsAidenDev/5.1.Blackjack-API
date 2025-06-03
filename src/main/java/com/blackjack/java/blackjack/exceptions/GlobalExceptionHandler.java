@@ -39,8 +39,8 @@ public class GlobalExceptionHandler {
         return Mono.just(new ErrorDetails(HttpStatus.NOT_FOUND.value(), "ERROR! Game not found: ", ex.getMessage()));
     }
 
-    @ExceptionHandler(ErrorDetails.RankingIsEmptyException.class)
-    public Mono<ErrorDetails> handleRankingIsEmptyException(ErrorDetails.RankingIsEmptyException ex) {
+    @ExceptionHandler(RankingIsEmptyException.class)
+    public Mono<ErrorDetails> handleRankingIsEmptyException(RankingIsEmptyException ex) {
         return Mono.just(new ErrorDetails(HttpStatus.NOT_FOUND.value(), "ERROR! Ranking is empty: ", ex.getMessage()));
     }
 
