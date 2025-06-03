@@ -1,4 +1,4 @@
-package com.blackjack.java.blackjack.models.cards;
+package com.blackjack.java.blackjack.model.cards;
 
 import lombok.*;
 import com.blackjack.java.blackjack.utils.CardSuit;

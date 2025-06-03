@@ -1,9 +1,10 @@
-package com.blackjack.java.blackjack.models;
+package com.blackjack.java.blackjack.model;
 
-import com.blackjack.java.blackjack.models.cards.Deck;
+import com.blackjack.java.blackjack.actions.DrawCard;
+import com.blackjack.java.blackjack.model.cards.Deck;
 import com.blackjack.java.blackjack.exceptions.InvalidActionException;
 import com.blackjack.java.blackjack.exceptions.InvalidPlayException;
-import com.blackjack.java.blackjack.repositories.GameRepository;
+import com.blackjack.java.blackjack.repository.GameRepository;
 import com.blackjack.java.blackjack.utils.GameStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
@@ -54,11 +55,16 @@ public class Game {
         this.playerTurn = true;
     }
 
+    public Long getGameId() {
+        return gameId;
+    }
+
     public void dealInitialCards() {
-        playerHand.addCard(deck.drawCard());
-        dealerHand.addCard(deck.drawCard());
-        playerHand.addCard(deck.drawCard());
-        dealerHand.addCard(deck.drawCard());
+        DrawCard drawCard = new DrawCard();
+        playerHand.addCard(drawCard.drawCard());
+        dealerHand.addCard(drawCard.drawCard());
+        playerHand.addCard(drawCard.drawCard());
+        dealerHand.addCard(drawCard.drawCard());
     }
 
     public Mono<Game> settleBet(Game game) {
@@ -133,9 +139,5 @@ public class Game {
 
     public boolean isBlackjack() {
         return playerHand.isBlackjack();
-    }
-
-    public Long getGameId() {
-        return gameId;
     }
 }

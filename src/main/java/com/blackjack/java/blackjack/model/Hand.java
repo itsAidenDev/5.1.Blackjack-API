@@ -1,6 +1,6 @@
-package com.blackjack.java.blackjack.models;
+package com.blackjack.java.blackjack.model;
 
-import com.blackjack.java.blackjack.models.cards.Card;
+import com.blackjack.java.blackjack.model.cards.Card;
 import com.blackjack.java.blackjack.utils.CardRank;
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package com.blackjack.java.blackjack.models;
+package com.blackjack.java.blackjack.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -30,9 +30,9 @@ public class Player {
     @Column("total_draws")
     private int totalDraws;
 
-    public Player(String name) {
+    public Player(Long playerId, String playerName) {
+        this.playerId = playerId;
         this.playerName = playerName;
-        this.totalWins = 0;
         this.totalGames = 0;
     }
 

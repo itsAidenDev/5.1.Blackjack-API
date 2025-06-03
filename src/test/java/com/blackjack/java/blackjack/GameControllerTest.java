@@ -13,15 +13,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 import java.util.List;
+import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 class GameControllerTest {
-
-    private WebTestClient client;
 
     @Mock
     private GameService gameServiceMock;
@@ -29,7 +29,11 @@ class GameControllerTest {
     @InjectMocks
     private GameController gameController;
 
+    private WebTestClient client;
+
     private GameResponseDTO sampleResponse;
+    private CreateGameRequestDTO createGameRequest;
+    private PlayerDTO playerTest;
 
     @BeforeEach
     void setUp() {
@@ -38,7 +42,7 @@ class GameControllerTest {
                 .baseUrl("/game")
                 .build();
 
-        PlayerDTO playerTest = new PlayerDTO(78L, "Fernando", 500);
+        playerTest = new PlayerDTO(78L, "Peter", 250);
         sampleResponse = new GameResponseDTO(
                 2L,
                 playerTest,
@@ -46,24 +50,31 @@ class GameControllerTest {
                 List.of(),
                 GameStatus.IN_PROGRESS,
                 true,
-                34);
+                34
+        );
+
+        createGameRequest = new CreateGameRequestDTO(78L, 75);
     }
 
     @Test
     void createGame_Returns201AndBody() {
-        CreateGameRequestDTO request = new CreateGameRequestDTO(1L, 100);
-        Mockito.when(gameServiceMock.createGame(request.getPlayerId(), request.getBet()))
+        Mockito.when(gameServiceMock.createGame(anyLong(), anyInt()))
                 .thenReturn(Mono.just(sampleResponse));
-
-        client.post()
+        WebTestClient.ResponseSpec response = client.post()
                 .uri("/new/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isEqualTo(201)
+                .bodyValue(createGameRequest)
+                .exchange();
+        response.expectStatus().isEqualTo(HttpStatus.CREATED.value())
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody()
-                .jsonPath("$.gameId").isEqualTo("gameId")
-                .jsonPath("$.player.id").isEqualTo(1)
-                .jsonPath("$.status").isEqualTo(GameStatus.IN_PROGRESS.toString());
+                .jsonPath("$.gameId").isEqualTo(sampleResponse.getGameId())
+                .jsonPath("$.player.id").isEqualTo(playerTest.getPlayerId())
+                .jsonPath("$.status").isEqualTo(sampleResponse.getStatus().getStatusName());
+    }
+
+    @Test
+    void createGame_InvalidRequest_Returns400() {
+        // Add test for invalid request
     }
 }

@@ -14,6 +14,6 @@ public class RankingDTO {
     private long totalWins;
     private long totalLosses;
     private long totalDraws;
-    //private double winRate;
+    private double winRate;
 
 }

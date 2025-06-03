@@ -12,10 +12,6 @@ public enum CardSuit {
         this.suitName = suitName;
     }
 
-    public String getSuitName() {
-        return suitName;
-    }
-
     @Override
     public String toString() {
         return suitName;

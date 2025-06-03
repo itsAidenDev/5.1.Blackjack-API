@@ -3,15 +3,17 @@ package com.blackjack.java.blackjack.service;
 import com.blackjack.java.blackjack.dto.GameMapper;
 import com.blackjack.java.blackjack.dto.GameResponseDTO;
 import com.blackjack.java.blackjack.dto.PlayerDTO;
+import com.blackjack.java.blackjack.dto.RankingDTO;
 import com.blackjack.java.blackjack.exceptions.InvalidPlayException;
 import com.blackjack.java.blackjack.exceptions.PlayerNotFoundException;
-import com.blackjack.java.blackjack.models.Game;
-import com.blackjack.java.blackjack.repositories.GameRepository;
-import com.blackjack.java.blackjack.repositories.PlayerRepository;
+import com.blackjack.java.blackjack.model.Game;
+import com.blackjack.java.blackjack.repository.GameRepository;
+import com.blackjack.java.blackjack.repository.PlayerRepository;
 import com.blackjack.java.blackjack.utils.GameStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -63,8 +65,8 @@ public class GameService {
                 });
     }
 
-    Mono<GameResponseDTO> playerHit(String gameId) {
-        return gameRepository.findById(Long.valueOf(gameId))
+    public Mono<GameResponseDTO> playerHit(Long gameId) {
+        return gameRepository.findById(String.valueOf(gameId))
                 .flatMap(game -> {
                     if (game.getStatus() != GameStatus.IN_PROGRESS) {
                         return Mono.error(new InvalidPlayException("Game is not in progress"));
@@ -77,8 +79,8 @@ public class GameService {
                 });
     }
 
-    Mono<GameResponseDTO> playerStand(String gameId) {
-        return gameRepository.findById(Long.valueOf(gameId))
+    public Mono<GameResponseDTO> playerStand(Long gameId) {
+        return gameRepository.findById(String.valueOf(gameId))
                 .flatMap(game -> {
                     if (game.getStatus() != GameStatus.IN_PROGRESS) {
                         return Mono.error(new InvalidPlayException("Game is not in progress"));
@@ -90,16 +92,51 @@ public class GameService {
                             });
                 });
     }
-    public Object getGameById(Long id) {
-        return null;
+
+    public Flux<RankingDTO> getPlayerRanking() {
+        return gameRepository.findAll()
+                .filter(game -> game.getPlayerId() != null)
+                .groupBy(Game::getPlayerId)
+                .flatMap(groupedFlux ->
+                        groupedFlux.collectList()
+                                .flatMap(gamesList ->
+                                        playerRepository.findById(groupedFlux.key())
+                                                .map(player -> {
+                                                    long totalGames = gamesList.size();
+                                                    long totalWins = gamesList.stream()
+                                                            .filter(game -> game.getStatus() == GameStatus.WON)
+                                                            .count();
+                                                    long totalLosses = gamesList.stream()
+                                                            .filter(game ->
+                                                                    game.getStatus() == GameStatus.LOST
+                                                                            || game.getStatus() == GameStatus.BUSTED)
+                                                            .count();
+                                                    long totalDraws = gamesList.stream()
+                                                            .filter(game -> game.getStatus() == GameStatus.DRAW)
+                                                            .count();
+                                                    double winRate = totalGames > 0 ? (totalWins * 100.0 / totalGames) : 0.0;
+                                                    return new RankingDTO(
+                                                            player.getPlayerId(),
+                                                            player.getPlayerName(),
+                                                            totalGames,
+                                                            totalWins,
+                                                            totalLosses,
+                                                            totalDraws,
+                                                            winRate
+                                                    );
+                                                })))
+                .sort((r1, r2) -> Double.compare(r2.getWinRate(), r1.getWinRate()));
+    }
+    public Object getGameById(Long gameId) {
+        return gameId;
     }
 
     public Object getPlayerById(Long id) {
         return null;
     }
 
-    public Mono<Game> playGame(Long id, String action) {
-        return gameRepository.findById(id)
+    public Mono<Game> playGame(Long gameId, String action) {
+        return gameRepository.findById(String.valueOf(gameId))
                 .flatMap(Mono::just);
     }
 

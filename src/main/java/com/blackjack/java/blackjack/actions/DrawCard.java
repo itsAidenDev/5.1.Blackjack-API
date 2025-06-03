@@ -1,6 +1,6 @@
 package com.blackjack.java.blackjack.actions;
 
-import com.blackjack.java.blackjack.models.cards.Card;
+import com.blackjack.java.blackjack.model.cards.Card;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ public class DrawCard {
 
     public Card drawCard() {
         if (cards.isEmpty()) {
-            throw new IllegalStateException("No more cards in the deck.");
+            throw new IllegalStateException("No more cards left in the deck.");
         } else {
             return cards.removeFirst();
         }

@@ -1,7 +1,7 @@
 package com.blackjack.java.blackjack.dto;
 
 import com.blackjack.java.blackjack.utils.GameStatus;
-import com.blackjack.java.blackjack.models.Game;
+import com.blackjack.java.blackjack.model.Game;
 
 import java.util.List;
 import java.util.stream.Collectors;

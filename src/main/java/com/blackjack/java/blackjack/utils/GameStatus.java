@@ -1,15 +1,26 @@
 package com.blackjack.java.blackjack.utils;
 
 public enum GameStatus {
-    IN_PROGRESS,
-    WON,
-    LOST,
-    DRAW,
-    BUSTED,
-    SETTLED;
+    IN_PROGRESS("In Progress"),
+    WON("Won"),
+    LOST("Lost"),
+    DRAW("Draw"),
+    BUSTED("Busted"),
+    SETTLED("Settled");
 
-    public static String toString(GameStatus status) {
-        return null;
+    private final String statusName;
+
+    GameStatus(String statusName) {
+        this.statusName = statusName;
+    }
+
+    public String getStatusName() {
+        return statusName;
+    }
+
+    @Override
+    public String toString() {
+        return this.statusName;
     }
 }
 

@@ -1,7 +1,7 @@
 package com.blackjack.java.blackjack.controllers;
 
-import com.blackjack.java.blackjack.models.Player;
-import com.blackjack.java.blackjack.repositories.PlayerRepository;
+import com.blackjack.java.blackjack.model.Player;
+import com.blackjack.java.blackjack.repository.PlayerRepository;
 import com.blackjack.java.blackjack.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
