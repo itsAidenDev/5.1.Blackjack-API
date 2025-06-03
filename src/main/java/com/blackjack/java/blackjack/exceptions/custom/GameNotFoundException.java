@@ -1,4 +1,4 @@
-package com.blackjack.java.blackjack.exceptions;
+package com.blackjack.java.blackjack.exceptions.custom;
 
 public class GameNotFoundException extends RuntimeException {
 

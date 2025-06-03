@@ -14,10 +14,6 @@ public enum GameStatus {
         this.statusName = statusName;
     }
 
-    public String getStatusName() {
-        return statusName;
-    }
-
     @Override
     public String toString() {
         return this.statusName;

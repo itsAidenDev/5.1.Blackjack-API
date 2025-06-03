@@ -2,8 +2,9 @@ package com.blackjack.java.blackjack;
 
 import com.blackjack.java.blackjack.controllers.GameController;
 import com.blackjack.java.blackjack.dto.CreateGameRequestDTO;
-import com.blackjack.java.blackjack.dto.GameResponseDTO;
+import com.blackjack.java.blackjack.dto.GameResponse;
 import com.blackjack.java.blackjack.dto.PlayerDTO;
+import com.blackjack.java.blackjack.exceptions.custom.InvalidPlayException;
 import com.blackjack.java.blackjack.service.GameService;
 import com.blackjack.java.blackjack.utils.GameStatus;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
@@ -31,7 +31,7 @@ class GameControllerTest {
 
     private WebTestClient client;
 
-    private GameResponseDTO sampleResponse;
+    private GameResponse sampleResponse;
     private CreateGameRequestDTO createGameRequest;
     private PlayerDTO playerTest;
 
@@ -42,8 +42,8 @@ class GameControllerTest {
                 .baseUrl("/game")
                 .build();
 
-        playerTest = new PlayerDTO(78L, "Peter", 250);
-        sampleResponse = new GameResponseDTO(
+        playerTest = new PlayerDTO(1L, "Peter", 250);
+        sampleResponse = new GameResponse(
                 2L,
                 playerTest,
                 List.of(),
@@ -52,29 +52,40 @@ class GameControllerTest {
                 true,
                 34
         );
-
-        createGameRequest = new CreateGameRequestDTO(78L, 75);
-    }
-
-    @Test
-    void createGame_Returns201AndBody() {
-        Mockito.when(gameServiceMock.createGame(anyLong(), anyInt()))
-                .thenReturn(Mono.just(sampleResponse));
-        WebTestClient.ResponseSpec response = client.post()
-                .uri("/new/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(createGameRequest)
-                .exchange();
-        response.expectStatus().isEqualTo(HttpStatus.CREATED.value())
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody()
-                .jsonPath("$.gameId").isEqualTo(sampleResponse.getGameId())
-                .jsonPath("$.player.id").isEqualTo(playerTest.getPlayerId())
-                .jsonPath("$.status").isEqualTo(sampleResponse.getStatus().getStatusName());
     }
 
     @Test
     void createGame_InvalidRequest_Returns400() {
-        // Add test for invalid request
+        CreateGameRequestDTO invalidRequest = new CreateGameRequestDTO(1L, -10);
+        Mockito.when(gameServiceMock.createGame(anyLong(), anyInt()))
+                .thenThrow(new InvalidPlayException("The bet cannot be less than 0"));
+
+        client.post()
+                .uri("/new/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(invalidRequest)
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody()
+                .jsonPath("$.message").isEqualTo("The bet cannot be less than 0"); // Asumiendo que devuelves un JSON con campo message
+    }
+
+    @Test
+    void createGame_Returns201AndBody() {
+        CreateGameRequestDTO request = new CreateGameRequestDTO(1L, 100);
+        Mockito.when(gameServiceMock.createGame(request.getPlayerId(), request.getBet()))
+                .thenReturn(Mono.just(sampleResponse));
+
+        client.post()
+                .uri("/new")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(request)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.gameId").isEqualTo("gameId")
+                .jsonPath("$.player.id").isEqualTo(1)
+                .jsonPath("$.status").isEqualTo(GameStatus.IN_PROGRESS.name());
     }
 }

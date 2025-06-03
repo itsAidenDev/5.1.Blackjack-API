@@ -1,11 +1,11 @@
 package com.blackjack.java.blackjack.service;
 
 import com.blackjack.java.blackjack.dto.GameMapper;
-import com.blackjack.java.blackjack.dto.GameResponseDTO;
+import com.blackjack.java.blackjack.dto.GameResponse;
 import com.blackjack.java.blackjack.dto.PlayerDTO;
 import com.blackjack.java.blackjack.dto.RankingDTO;
-import com.blackjack.java.blackjack.exceptions.InvalidPlayException;
-import com.blackjack.java.blackjack.exceptions.PlayerNotFoundException;
+import com.blackjack.java.blackjack.exceptions.custom.InvalidPlayException;
+import com.blackjack.java.blackjack.exceptions.custom.PlayerNotFoundException;
 import com.blackjack.java.blackjack.model.Game;
 import com.blackjack.java.blackjack.repository.GameRepository;
 import com.blackjack.java.blackjack.repository.PlayerRepository;
@@ -28,7 +28,7 @@ public class GameService {
     }
 
     @Transactional
-    public Mono<GameResponseDTO> createGame(Long playerId, int bet) {
+    public Mono<GameResponse> createGame(Long playerId, int bet) {
         return playerRepository.findById(String.valueOf(playerId))
                 .switchIfEmpty(Mono.error(new PlayerNotFoundException(playerId)))
                 .flatMap(player -> {
@@ -65,7 +65,7 @@ public class GameService {
                 });
     }
 
-    public Mono<GameResponseDTO> playerHit(Long gameId) {
+    public Mono<GameResponse> playerHit(Long gameId) {
         return gameRepository.findById(String.valueOf(gameId))
                 .flatMap(game -> {
                     if (game.getStatus() != GameStatus.IN_PROGRESS) {
@@ -79,7 +79,7 @@ public class GameService {
                 });
     }
 
-    public Mono<GameResponseDTO> playerStand(Long gameId) {
+    public Mono<GameResponse> playerStand(Long gameId) {
         return gameRepository.findById(String.valueOf(gameId))
                 .flatMap(game -> {
                     if (game.getStatus() != GameStatus.IN_PROGRESS) {
@@ -142,5 +142,9 @@ public class GameService {
 
     public Mono<Object> deleteGame(Long id) {
         return null;
+    }
+
+    public Flux<Game> getAllGames() {
+        return gameRepository.findAll();
     }
 }

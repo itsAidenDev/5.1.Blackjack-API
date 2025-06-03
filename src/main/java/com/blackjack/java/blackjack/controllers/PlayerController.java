@@ -1,17 +1,18 @@
 package com.blackjack.java.blackjack.controllers;
 
+import com.blackjack.java.blackjack.dto.PlayerDTO;
 import com.blackjack.java.blackjack.model.Player;
 import com.blackjack.java.blackjack.repository.PlayerRepository;
 import com.blackjack.java.blackjack.service.PlayerService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-
 
 @RestController
 @RequestMapping("/players")
@@ -41,14 +42,15 @@ public class PlayerController {
     @GetMapping("/{id}")
     public Mono<Player> getPlayerById(
             @Parameter(description = "Player ID", required = true)
-            @PathVariable Long id) {
-        return playerService.getPlayerById(String.valueOf(id));
+            @PathVariable Long PlayerId) {
+        return playerService.getPlayerById(PlayerId);
     }
 
+    @Operation(summary = "List all players in the database", description = "Gets all players registered in the database")
     @ApiResponse(responseCode = "200", description = "OK")
     @GetMapping
     public Flux<Player> getAllPlayers() {
-        return playerRepository.findAll();
+        return playerService.getAllPlayers();
     }
 
     @ApiResponse(responseCode = "200", description = "OK")
@@ -56,19 +58,19 @@ public class PlayerController {
     @PutMapping("/{id}")
     public Mono<Player> updatePlayer(
             @Parameter(description = "Player ID", required = true)
-            @PathVariable Long id,
+            @PathVariable Long PlayerId,
             @RequestBody Player player) {
-        return playerService.updatePlayerName(id, player);
+        return playerService.updatePlayer(PlayerId, player);
     }
 
     @PutMapping("/{playerId}")
     public Mono<ResponseEntity<Player>> updatePlayerName(
-            @PathVariable String playerId,
+            @PathVariable Long playerId,
             @RequestBody String newPlayerName) {
         return playerService.getPlayerById(playerId)
                 .flatMap(player -> {
                     player.setPlayerName(newPlayerName);
-                    return playerService.updatePlayerName(Long.parseLong(playerId), player);
+                    return playerService.updatePlayer(playerId, player);
                 })
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
@@ -80,13 +82,8 @@ public class PlayerController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public Mono<Void> deletePlayer(
             @Parameter(description = "Player ID", required = true)
-            @PathVariable Long id) {
-        return playerService.deleteByPlayerId(id);
+            @PathVariable Long PlayerId) {
+        return playerService.deleteByPlayerId(PlayerId);
     }
-
-    @GetMapping("/ranking")
-    public Flux<Player> getPlayerRanking() {
-        return playerService.getPlayerRanking();
-    }
-
 }
+

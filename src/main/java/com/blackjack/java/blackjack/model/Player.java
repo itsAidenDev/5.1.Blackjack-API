@@ -30,14 +30,23 @@ public class Player {
     @Column("total_draws")
     private int totalDraws;
 
-    public Player(Long playerId, String playerName) {
+    public Player(Long playerId, String playerName, Integer totalPoints) {
         this.playerId = playerId;
         this.playerName = playerName;
-        this.totalGames = 0;
+        this.totalPoints = totalPoints;
     }
 
     @Schema(description = "Total points to bet", defaultValue = "100")
     @Column("total_points")
     @JsonProperty("score")
     private Integer totalPoints = 100;
+
+    public double getWinRate() {
+        if (totalGames == 0) {
+            return 0.0;
+        }
+        return (double) totalWins / totalGames;
+    }
 }
+
+

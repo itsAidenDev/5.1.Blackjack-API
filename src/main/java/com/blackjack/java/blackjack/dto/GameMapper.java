@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 public class GameMapper {
 
-    public static GameResponseDTO toDto(Game game, PlayerDTO playerDTO) {
+    public static GameResponse toDto(Game game, PlayerDTO playerDTO) {
         List<CardDTO> playerCards = game.getPlayerHand()
                 .getCards()
                 .stream()
@@ -25,7 +25,7 @@ public class GameMapper {
             dealerCards = dealerCards.subList(0, 1);
         }
 
-        return new GameResponseDTO(
+        return new GameResponse(
                 game.getGameId(),
                 playerDTO,
                 playerCards,

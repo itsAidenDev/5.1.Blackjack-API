@@ -2,8 +2,8 @@ package com.blackjack.java.blackjack.model;
 
 import com.blackjack.java.blackjack.actions.DrawCard;
 import com.blackjack.java.blackjack.model.cards.Deck;
-import com.blackjack.java.blackjack.exceptions.InvalidActionException;
-import com.blackjack.java.blackjack.exceptions.InvalidPlayException;
+import com.blackjack.java.blackjack.exceptions.custom.InvalidActionException;
+import com.blackjack.java.blackjack.exceptions.custom.InvalidPlayException;
 import com.blackjack.java.blackjack.repository.GameRepository;
 import com.blackjack.java.blackjack.utils.GameStatus;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,8 +1,8 @@
 package com.blackjack.java.blackjack.exceptions;
 
+import com.blackjack.java.blackjack.exceptions.custom.*;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.ErrorResponse;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.support.WebExchangeBindException;
@@ -16,46 +16,44 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public Mono<ErrorDetails> handleGeneralExceptions(Exception ex) {
         log.debug("Unhandled exception caught in GlobalExceptionHandler", ex);
-        return Mono.just(new ErrorDetails(HttpStatus.INTERNAL_SERVER_ERROR.value(), "ERROR: ", ex.getMessage()));
+        return Mono.just(new ErrorDetails(HttpStatus.INTERNAL_SERVER_ERROR.value(), "ERROR! An unexpected error occurred: ", ex.getMessage()));
     }
 
     @ExceptionHandler(WebExchangeBindException.class)
-    public Mono<ResponseEntity<String>> handleValidationExceptions(WebExchangeBindException ex) {
-        return Mono.just(ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body("Validation error: " + ex.getMessage()));
+    public Mono<ErrorDetails> handleValidationExceptions(WebExchangeBindException ex) {
+        return Mono.just(new ErrorDetails(HttpStatus.BAD_REQUEST.value(), "ERROR! Invalid request: ", ex.getMessage()));
     }
 
     @ExceptionHandler(PlayerNotFoundException.class)
-    public Mono<ErrorResponse> handlePlayerNotFoundException(PlayerNotFoundException ex) {
-        return Mono.just((ErrorResponse) ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body("ERROR: " + ex.getMessage()));
+    public Mono<ErrorDetails> handlePlayerNotFoundException(PlayerNotFoundException ex) {
+        return Mono.just(new ErrorDetails(HttpStatus.NOT_FOUND.value(), "ERROR! Player not found: ", ex.getMessage()));
+    }
+
+    @ExceptionHandler(PlayerAlreadyExistsException.class)
+    public Mono<ErrorDetails> handlePlayerAlreadyExistsException(Exception ex) {
+        return Mono.just(new ErrorDetails(HttpStatus.CONFLICT.value(), "ERROR! Player already exists: ", ex.getMessage()));
     }
 
     @ExceptionHandler(GameNotFoundException.class)
-    public Mono<ErrorResponse> handleGameNotFoundException(GameNotFoundException ex) {
-        return Mono.just((ErrorResponse) ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body("ERROR: " + ex.getMessage()));
+    public Mono<ErrorDetails> handleGameNotFoundException(GameNotFoundException ex) {
+        return Mono.just(new ErrorDetails(HttpStatus.NOT_FOUND.value(), "ERROR! Game not found: ", ex.getMessage()));
+    }
+
+    @ExceptionHandler(ErrorDetails.RankingIsEmptyException.class)
+    public Mono<ErrorDetails> handleRankingIsEmptyException(ErrorDetails.RankingIsEmptyException ex) {
+        return Mono.just(new ErrorDetails(HttpStatus.NOT_FOUND.value(), "ERROR! Ranking is empty: ", ex.getMessage()));
     }
 
     @ExceptionHandler(InvalidPlayException.class)
     public Mono<ErrorDetails> handleInvalidPlayException(InvalidPlayException ex) {
         log.debug("InvalidPlayException caught in GlobalExceptionHandler", ex);
-        return Mono.just(new ErrorDetails(HttpStatus.BAD_REQUEST.value(), "ERROR: ", ex.getMessage()));
+        return Mono.just(new ErrorDetails(HttpStatus.BAD_REQUEST.value(), "ERROR! Invalid play: ", ex.getMessage()));
     }
 
     @ExceptionHandler(InvalidActionException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Mono<ErrorDetails> handleInvalidActionException(InvalidActionException ex) {
-        log.debug("InvalidActionException caught in GlobalExceptionHandler", ex);
-        return Mono.just(new ErrorDetails(HttpStatus.BAD_REQUEST.value(), "ERROR: ", ex.getMessage()));
-    }
-
-    @ExceptionHandler(PlayerAlreadyExistsException.class)
-    public Mono<ErrorDetails> handlePlayerAlreadyExistsException(Exception ex) {
-        log.debug("Unhandled exception caught in GlobalExceptionHandler", ex);
-        return Mono.just(new ErrorDetails(HttpStatus.CONFLICT.value(), "ERROR: ", ex.getMessage()));
+        return Mono.just(new ErrorDetails(HttpStatus.BAD_REQUEST.value(),"ERROR! Invalid action: ", ex.getMessage()));
     }
 
 }

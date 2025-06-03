@@ -8,4 +8,6 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface PlayerRepository extends ReactiveCrudRepository<Player, String> {
     Mono<Player> findById(Long playerId);
+    Mono<Void> deleteById(Long playerId);
+
 }
