@@ -6,4 +6,6 @@ import reactor.core.publisher.Mono;
 
 public interface PlayerRepository extends ReactiveMongoRepository<Player, String> {
     Mono<Player> findByPlayerId(Long playerId);
+
+    Mono<Player> findByName(String playerName);
 }

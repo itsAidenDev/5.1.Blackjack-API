@@ -1,19 +1,21 @@
 package com.blackjack.java.blackjack.models.cards;
 
+import com.blackjack.java.blackjack.actions.Shuffle;
 import com.blackjack.java.blackjack.utils.CardRank;
 import com.blackjack.java.blackjack.utils.CardSuit;
+import lombok.Getter;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
+@Getter
 public class Deck {
     private final List<Card> cards;
 
     public Deck() {
         this.cards = new ArrayList<>();
         initializeDeck();
-        shuffle();
+        Shuffle.shuffle(this);
     }
 
     private void initializeDeck() {
@@ -24,8 +26,6 @@ public class Deck {
             }
         }
     }
-
-
 
     public Card drawCard() {
         if (cards.isEmpty()) {

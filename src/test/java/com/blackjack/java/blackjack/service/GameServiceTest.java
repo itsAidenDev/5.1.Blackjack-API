@@ -1,5 +1,6 @@
 package com.blackjack.java.blackjack.service;
 
+import com.blackjack.java.blackjack.dto.GameResponseDTO;
 import com.blackjack.java.blackjack.models.Game;
 import com.blackjack.java.blackjack.models.Player;
 import com.blackjack.java.blackjack.repositories.GameRepository;
@@ -39,9 +40,9 @@ public class GameServiceTest {
 
         when(playerRepository.findByName(playerName)).thenReturn(Mono.empty());
         when(playerRepository.save(any(Player.class))).thenReturn(Mono.just(newPlayer));
-        when(gameRepository.save(any(Game.class))).thenReturn(newGame);
+        when(gameRepository.save(any(Game.class))).thenReturn(Mono.just(newGame));
 
-        Mono<Game> result = gameService.createNewGame(playerName);
+        Mono<GameResponseDTO> result = gameService.createGame(newPlayer.getPlayerId(), 0); // assuming the bet is 0
 
         StepVerifier.create(result)
                 .expectNextMatches(game ->

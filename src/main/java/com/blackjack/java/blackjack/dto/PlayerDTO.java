@@ -16,4 +16,12 @@ public class PlayerDTO {
     private long totalDraws;
     private Integer totalPoints;
     private double winRate;
+
+    public PlayerDTO(long playerId, String name, int totalPoints) {
+        this.playerId = playerId;
+        this.name = name;
+        this.totalPoints = totalPoints;
+    }
 }
+
+

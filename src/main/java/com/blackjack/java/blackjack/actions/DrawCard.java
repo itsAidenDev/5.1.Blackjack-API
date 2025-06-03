@@ -11,7 +11,7 @@ public class DrawCard {
         if (cards.isEmpty()) {
             throw new IllegalStateException("No more cards in the deck.");
         } else {
-            return cards.remove(0);
+            return cards.removeFirst();
         }
     }
     public int size() {

@@ -6,7 +6,6 @@ import com.blackjack.java.blackjack.dto.PlayerDTO;
 import com.blackjack.java.blackjack.exceptions.InvalidPlayException;
 import com.blackjack.java.blackjack.exceptions.PlayerNotFoundException;
 import com.blackjack.java.blackjack.models.Game;
-import com.blackjack.java.blackjack.models.Player;
 import com.blackjack.java.blackjack.repositories.GameRepository;
 import com.blackjack.java.blackjack.repositories.PlayerRepository;
 import com.blackjack.java.blackjack.utils.GameStatus;
@@ -47,14 +46,14 @@ public class GameService {
                             .flatMap(savedGame -> {
                                 Mono<Game> gameMono;
                                 if (savedGame.getStatus() != GameStatus.IN_PROGRESS) {
-                                    gameMono = settleBet(savedGame).thenReturn(savedGame);
+                                    gameMono = savedGame.settleBet(savedGame).thenReturn(savedGame);
                                 } else {
                                     gameMono = Mono.just(savedGame);
                                 }
                                 return gameMono
                                         .flatMap(gameResult ->
                                                 playerRepository.findById(gameResult.getPlayerId())
-                                                        .switchIfEmpty(Mono.error(new PlayerNotFoundException(gameResult.getPlayerId())))
+                                                        .switchIfEmpty(Mono.error(new PlayerNotFoundException(Long.parseLong(gameResult.getPlayerId()))))
                                                         .map(playerFound -> GameMapper.toDto(
                                                                 gameResult,
                                                                 new PlayerDTO(playerFound.getPlayerId(), playerFound.getPlayerName(), playerFound.getTotalPoints())

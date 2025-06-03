@@ -1,5 +1,6 @@
 package com.blackjack.java.blackjack.controllers;
 
+import com.blackjack.java.blackjack.dto.GameResponseDTO;
 import com.blackjack.java.blackjack.models.Game;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -23,8 +24,8 @@ public class GameController {
     @Operation(summary = "Create new game", description = "Create new game with a player and a bet")
     @ApiResponse(responseCode = "201", description = "NEW GAME CREATED")
     @PostMapping("/new/{playerId}")
-    public Mono<ResponseEntity<Game>> createNewGame(@RequestBody String playerName) {
-        return gameService.createNewGame(playerName)
+    public Mono<ResponseEntity<GameResponseDTO>> createNewGame(@PathVariable Long playerId, @RequestBody int bet) {
+        return gameService.createGame(playerId, bet)
                 .map(game -> ResponseEntity.status(HttpStatus.CREATED).body(game));
     }
 

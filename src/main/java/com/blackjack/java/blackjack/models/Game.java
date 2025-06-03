@@ -8,7 +8,6 @@ import com.blackjack.java.blackjack.utils.GameStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-//import java.util.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -62,7 +61,7 @@ public class Game {
         dealerHand.addCard(deck.drawCard());
     }
 
-    private Mono<Game> settleBet(Game game) {
+    public Mono<Game> settleBet(Game game) {
         game.setStatus(GameStatus.SETTLED);
         return gameRepository.save(game);
     }
