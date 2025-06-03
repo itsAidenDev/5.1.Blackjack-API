@@ -22,10 +22,4 @@ public final class ErrorDetails {
     public String getMessage() {
         return message;
     }
-
-    public static class RankingIsEmptyException extends RuntimeException {
-        public RankingIsEmptyException(String message) {
-            super(message);
-        }
-    }
 }
