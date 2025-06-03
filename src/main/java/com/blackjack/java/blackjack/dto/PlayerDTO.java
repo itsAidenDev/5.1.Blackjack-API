@@ -14,6 +14,6 @@ public class PlayerDTO {
     private long totalWins;
     private long totalLosses;
     private long totalDraws;
+    private Integer totalPoints;
     private double winRate;
-    private Integer balance;
 }

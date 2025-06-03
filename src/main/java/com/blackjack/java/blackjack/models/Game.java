@@ -3,7 +3,9 @@ package com.blackjack.java.blackjack.models;
 import com.blackjack.java.blackjack.models.cards.Deck;
 import com.blackjack.java.blackjack.exceptions.InvalidActionException;
 import com.blackjack.java.blackjack.exceptions.InvalidPlayException;
+import com.blackjack.java.blackjack.repositories.GameRepository;
 import com.blackjack.java.blackjack.utils.GameStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 //import java.util.DateTimeFormatter;
@@ -11,6 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 import lombok.*;
+import reactor.core.publisher.Mono;
 
 @Data
 @Getter
@@ -18,16 +21,17 @@ import lombok.*;
 @Document(collection = "games")
 public class Game {
 
+    @Autowired
+    private GameRepository gameRepository;
+
     @Id
     private Long gameId;
     private String playerId;
     private Deck deck;
-    //private Date createdAt;
     private GameStatus status;
     private Hand playerHand;
     private Hand dealerHand;
     private boolean playerTurn;
-
     private int playerScore;
     private int dealerScore;
     private List<String> playerCards;
@@ -35,7 +39,6 @@ public class Game {
     private int bet;
 
     public Game() {
-       // this.createdAt = new Date();
     }
 
     public Game(Long playerId, int initialBet) {
@@ -59,6 +62,11 @@ public class Game {
         dealerHand.addCard(deck.drawCard());
     }
 
+    private Mono<Game> settleBet(Game game) {
+        game.setStatus(GameStatus.SETTLED);
+        return gameRepository.save(game);
+    }
+
     public void checkInitialBlackjack() {
         boolean playerBlackjack = playerHand.isBlackjack();
         boolean dealerBlackjack = dealerHand.isBlackjack();
@@ -76,14 +84,14 @@ public class Game {
     private void ensurePlayerCanPlay() {
         if (status != GameStatus.IN_PROGRESS || !playerTurn) {
             throw new InvalidPlayException(
-                    "No puede jugar " + status + ", playerTurn=" + playerTurn
+                    "The game is not in progress or it is not the player's turn. Status= " + status + ". PlayerTurn=" + playerTurn
             );
         }
     }
     public void playerHit() {
         ensurePlayerCanPlay();
         if(!playerHand.canHit()){
-            throw new InvalidActionException("No puede pedir carta" + playerHand);
+            throw new InvalidActionException("The player cannot hit. PlayerHand=" + playerHand);
         }
         playerHand.addCard(deck.drawCard());
         if(playerHand.isBusted()) {

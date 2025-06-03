@@ -5,7 +5,7 @@ public enum GameStatus {
     WON,
     LOST,
     DRAW,
-    BUSTED;
+    BUSTED, SETTLED;
 
     public static String toString(GameStatus status) {
         return null;
