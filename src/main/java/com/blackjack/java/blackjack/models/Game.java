@@ -127,4 +127,8 @@ public class Game {
     public boolean isBlackjack() {
         return playerHand.isBlackjack();
     }
+
+    public Long getGameId() {
+        return gameId;
+    }
 }

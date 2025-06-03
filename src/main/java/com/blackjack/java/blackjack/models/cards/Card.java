@@ -12,9 +12,9 @@ public class Card {
     private CardSuit suit;
     private CardRank rank;
 
-    public Card(String suit, String rank, int value) {
-        this.suit = CardSuit.valueOf(suit);
-        this.rank = CardRank.valueOf(rank);
+    public Card(CardSuit suit, CardRank rank, int value) {
+        this.suit = suit;
+        this.rank = rank;
     }
 
     public int getValue() {

@@ -28,25 +28,6 @@ public class PlayerController {
     @Autowired
     private PlayerRepository playerRepository;
 
-    @PutMapping("/{playerId}")
-    public Mono<ResponseEntity<Player>> updatePlayerName(
-            @PathVariable String playerId,
-            @RequestBody String newPlayerName) {
-        return playerService.getPlayerById(playerId)
-                .flatMap(player -> {
-                    player.setPlayerName(newPlayerName);
-                    return playerService.updatePlayerName(Long.parseLong(playerId), player);
-                })
-                .map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.notFound().build());
-    }
-
-    @ApiResponse(responseCode = "200", description = "OK")
-    @GetMapping
-    public Flux<Player> getAllPlayers() {
-        return playerRepository.findAll();
-    }
-
     @ApiResponse(responseCode = "201", description = "CREATED")
     @ApiResponse(responseCode = "400", description = "BAD REQUEST")
     @PostMapping
@@ -67,6 +48,12 @@ public class PlayerController {
     }
 
     @ApiResponse(responseCode = "200", description = "OK")
+    @GetMapping
+    public Flux<Player> getAllPlayers() {
+        return playerRepository.findAll();
+    }
+
+    @ApiResponse(responseCode = "200", description = "OK")
     @ApiResponse(responseCode = "404", description = "NOT FOUND")
     @PutMapping("/{id}")
     public Mono<Player> updatePlayer(
@@ -74,6 +61,19 @@ public class PlayerController {
             @PathVariable Long id,
             @RequestBody Player player) {
         return playerService.updatePlayerName(id, player);
+    }
+
+    @PutMapping("/{playerId}")
+    public Mono<ResponseEntity<Player>> updatePlayerName(
+            @PathVariable String playerId,
+            @RequestBody String newPlayerName) {
+        return playerService.getPlayerById(playerId)
+                .flatMap(player -> {
+                    player.setPlayerName(newPlayerName);
+                    return playerService.updatePlayerName(Long.parseLong(playerId), player);
+                })
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @ApiResponse(responseCode = "204", description = "NO CONTENT")

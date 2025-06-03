@@ -8,5 +8,5 @@ CREATE TABLE IF NOT EXISTS games (
     totalWins INT NOT NULL,
     totalLosses INT NOT NULL,
     totalDraws INT NOT NULL,
-    balance DECIMAL(10, 2) NOT NULL
+    totalPoints DECIMAL(10, 2) NOT NULL
 );

@@ -10,8 +10,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GameResponseDTO {
-    private String gameId;
-    private PlayerDTO player;
+    private Long gameId;
+    private PlayerDTO playerId;
     private List<CardDTO> playerHand;
     private List<CardDTO> dealerHand;
     private GameStatus status;

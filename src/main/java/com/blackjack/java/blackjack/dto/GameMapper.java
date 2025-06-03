@@ -26,7 +26,7 @@ public class GameMapper {
         }
 
         return new GameResponseDTO(
-                String.valueOf(game.getGameId()),
+                game.getGameId(),
                 playerDTO,
                 playerCards,
                 dealerCards,

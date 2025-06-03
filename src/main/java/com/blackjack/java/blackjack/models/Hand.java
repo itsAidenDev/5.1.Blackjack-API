@@ -58,6 +58,7 @@ public class Hand {
     public boolean canHit(){
         return !stood && !isBusted() && !isBlackjack();
     }
+
     public void clear(){
         cards.clear();
         stood = false;

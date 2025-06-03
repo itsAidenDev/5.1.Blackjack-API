@@ -1,5 +1,6 @@
 package com.blackjack.java.blackjack.service;
 
+import com.blackjack.java.blackjack.dto.GameResponseDTO;
 import com.blackjack.java.blackjack.models.Game;
 import com.blackjack.java.blackjack.models.Player;
 import com.blackjack.java.blackjack.repositories.GameRepository;
@@ -36,6 +37,10 @@ public class GameService {
                     return gameRepository.save(newGame);
                 });
     }
+
+    Mono<GameResponseDTO> playerHit(String gameId);
+
+    Mono<GameResponseDTO> playerStand(String gameId);
 
     public Object getGameById(Long id) {
         return null;

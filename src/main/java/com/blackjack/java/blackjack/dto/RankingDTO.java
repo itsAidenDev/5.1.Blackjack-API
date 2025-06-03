@@ -7,13 +7,13 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PlayerDTO {
+public class RankingDTO {
     private Long playerId;
-    private String name;
+    private String playerName;
     private long totalGames;
     private long totalWins;
     private long totalLosses;
     private long totalDraws;
-    private double winRate;
-    private Integer balance;
+    //private double winRate;
+
 }
