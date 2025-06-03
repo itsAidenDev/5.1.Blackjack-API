@@ -1,4 +1,0 @@
-package com.blackjack.java.blackjack.configuration;
-
-public class MongoDBConfiguration {
-}
